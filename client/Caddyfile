@@ -1,0 +1,18 @@
+:80, :443 {
+    tls internal
+    
+    # 先设置 root
+    root * /usr/share/caddy
+    
+    # 使用 handle 指令来明确处理顺序
+    # 先处理 API 路由
+    handle /api/* {
+        reverse_proxy server:3001
+    }
+    
+    # 然后处理静态文件和服务端渲染
+    handle {
+        try_files {path} /index.html
+        file_server
+    }
+}
