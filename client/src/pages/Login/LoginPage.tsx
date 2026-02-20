@@ -41,18 +41,19 @@ export const LoginPage = () => {
       <BackgroundOrbs />
 
       <div className="relative w-full max-w-md page-enter">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-200/50 border border-white/50 p-8 card-glow">
+        <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 border border-white/60 p-8 liquid-card">
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/30">
-              <span className="text-4xl bounce-subtle">🎉</span>
+            <div className="relative w-24 h-24 bg-gradient-to-br from-violet-500 via-indigo-500 to-blue-500 rounded-[2rem] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30 liquid-icon-container">
+              <span className="text-5xl bounce-subtle">🎉</span>
+              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">欢迎回来</h1>
+            <h1 className="text-3xl font-bold text-slate-800 liquid-title">欢迎回来</h1>
             <p className="text-slate-500 mt-2">登录您的账户</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-3 bg-red-50 text-red-500 text-sm rounded-xl border border-red-100">
+              <div className="p-4 bg-red-50/80 backdrop-blur-sm text-red-500 text-sm rounded-2xl border border-red-100/50 liquid-error">
                 {error}
               </div>
             )}
@@ -75,14 +76,14 @@ export const LoginPage = () => {
               required
             />
 
-            <Button type="submit" className="w-full btn-shine ripple" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading} liquid>
               {loading ? '登录中...' : '登录'}
             </Button>
           </form>
 
-          <p className="text-center text-slate-500 mt-6">
+          <p className="text-center text-slate-500 mt-8">
             还没有账户？{' '}
-            <Link to="/register" className="text-indigo-500 hover:text-indigo-600 font-medium hover:underline">
+            <Link to="/register" className="text-indigo-500 hover:text-indigo-600 font-medium hover:underline liquid-link">
               立即注册
             </Link>
           </p>

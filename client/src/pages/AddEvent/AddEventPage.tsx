@@ -6,11 +6,20 @@ import { eventApi } from '../../api';
 import { EventType } from '../../types';
 import { LUNAR_MONTHS, LUNAR_DAYS, lunarToSolar } from '../../utils/lunar';
 
-const eventTypes: { value: EventType; label: string; icon: string; color: string }[] = [
-  { value: 'BIRTHDAY', label: '生日', icon: '🎂', color: 'bg-pink-50 text-pink-500' },
-  { value: 'ANNIVERSARY', label: '纪念日', icon: '❤️', color: 'bg-red-50 text-red-500' },
-  { value: 'FESTIVAL', label: '传统节日', icon: '🏮', color: 'bg-amber-50 text-amber-500' },
-  { value: 'CUSTOM', label: '自定义', icon: '📌', color: 'bg-purple-50 text-purple-500' },
+const BackgroundOrbs = () => (
+  <div className="bg-animation">
+    <div className="orb orb-1" />
+    <div className="orb orb-2" />
+    <div className="orb orb-3" />
+    <div className="orb orb-4" />
+  </div>
+);
+
+const eventTypes: { value: EventType; label: string; icon: string; gradient: string; activeGradient: string }[] = [
+  { value: 'BIRTHDAY', label: '生日', icon: '🎂', gradient: 'from-pink-100 to-rose-100', activeGradient: 'from-pink-400 to-rose-400' },
+  { value: 'ANNIVERSARY', label: '纪念日', icon: '❤️', gradient: 'from-red-100 to-pink-100', activeGradient: 'from-red-400 to-pink-400' },
+  { value: 'FESTIVAL', label: '传统节日', icon: '🏮', gradient: 'from-amber-100 to-orange-100', activeGradient: 'from-amber-400 to-orange-400' },
+  { value: 'CUSTOM', label: '自定义', icon: '📌', gradient: 'from-purple-100 to-violet-100', activeGradient: 'from-purple-400 to-violet-400' },
 ];
 
 type DateMode = 'solar' | 'lunar';
@@ -49,6 +58,101 @@ const getLunarYears = () => {
     years.push({ value: i, label: `${i}年` });
   }
   return years;
+};
+
+const LiquidSelect = ({ 
+  value, 
+  onChange, 
+  options, 
+  label,
+  colorClass = 'indigo'
+}: { 
+  value: number; 
+  onChange: (value: number) => void; 
+  options: { value: number; label: string }[];
+  label: string;
+  colorClass?: 'indigo' | 'amber';
+}) => {
+  const colorMap = {
+    indigo: {
+      border: 'border-slate-200',
+      focus: 'focus:ring-indigo-400/50 focus:border-indigo-300',
+      gradient: 'from-indigo-400 to-blue-400'
+    },
+    amber: {
+      border: 'border-slate-200',
+      focus: 'focus:ring-amber-400/50 focus:border-amber-300',
+      gradient: 'from-amber-400 to-orange-400'
+    }
+  };
+  const colors = colorMap[colorClass];
+
+  return (
+    <div className="relative">
+      <label className="block text-sm font-medium text-slate-700 mb-2 liquid-label">
+        {label}
+      </label>
+      <div className="relative liquid-select-wrapper">
+        <select
+          value={value}
+          onChange={(e) => onChange(parseInt(e.target.value))}
+          className={`w-full px-5 py-3.5 rounded-2xl border ${colors.border} bg-white/80 backdrop-blur-sm text-slate-800 appearance-none cursor-pointer transition-all duration-500 liquid-select ${colors.focus}`}
+        >
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+          <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        <div className="liquid-select-glow" style={{ 
+          background: colorClass === 'indigo' 
+            ? 'linear-gradient(135deg, #6366F1, #8B5CF6)' 
+            : 'linear-gradient(135deg, #F59E0B, #EF4444)' 
+        }} />
+      </div>
+    </div>
+  );
+};
+
+const LiquidCheckbox = ({ 
+  checked, 
+  onChange, 
+  label 
+}: { 
+  checked: boolean; 
+  onChange: (checked: boolean) => void; 
+  label: string;
+}) => {
+  return (
+    <label className="flex items-center gap-3 cursor-pointer liquid-checkbox-wrapper">
+      <div className="relative">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          className="sr-only"
+        />
+        <div 
+          className={`w-12 h-7 rounded-full transition-all duration-500 liquid-checkbox ${
+            checked 
+              ? 'bg-gradient-to-r from-indigo-500 to-purple-500' 
+              : 'bg-slate-200'
+          }`}
+        >
+          <div 
+            className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg transition-all duration-500 ${
+              checked ? 'left-6' : 'left-1'
+            }`}
+          />
+        </div>
+        {checked && <div className="absolute inset-0 rounded-full animate-ping opacity-30 bg-indigo-400" />}
+      </div>
+      <span className="text-sm text-slate-600">{label}</span>
+    </label>
+  );
 };
 
 export const AddEventPage = () => {
@@ -152,23 +256,26 @@ export const AddEventPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      <BackgroundOrbs />
+
+      <div className="max-w-2xl mx-auto px-4 py-8 relative z-10">
         <button
           onClick={() => navigate('/')}
-          className="text-slate-500 hover:text-slate-700 mb-6 flex items-center gap-2"
+          className="text-slate-500 hover:text-indigo-600 mb-6 flex items-center gap-2 transition-colors duration-300"
         >
-          ← 返回
+          <span className="text-xl">←</span>
+          <span>返回</span>
         </button>
 
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white/50 p-8">
-          <h1 className="text-2xl font-bold text-slate-800 mb-6">
+        <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 border border-white/60 p-8 liquid-card">
+          <h1 className="text-3xl font-bold text-slate-800 mb-8 text-center">
             {isEditing ? '编辑事件' : '添加新事件'}
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="p-3 bg-red-50 text-red-500 text-sm rounded-xl">
+              <div className="p-4 bg-red-50/80 backdrop-blur-sm text-red-500 text-sm rounded-2xl border border-red-100/50 liquid-error">
                 {error}
               </div>
             )}
@@ -184,187 +291,175 @@ export const AddEventPage = () => {
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 mb-4">
                 事件类型
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {eventTypes.map((et) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {eventTypes.map((et, index) => (
                   <button
                     key={et.value}
                     type="button"
                     onClick={() => setType(et.value)}
-                    className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
+                    className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-500 overflow-hidden ${
                       type === et.value
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-slate-100 hover:border-slate-200'
-                    }`}
+                        ? 'border-transparent'
+                        : 'border-white/50 hover:border-slate-200'
+                    } ${type === et.value ? '' : 'bg-white/50'}`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <div className="text-2xl mb-1">{et.icon}</div>
-                    <div className={`text-sm font-medium ${type === et.value ? 'text-indigo-600' : 'text-slate-600'}`}>
-                      {et.label}
+                    {type === et.value && (
+                      <div className={`absolute inset-0 bg-gradient-to-br ${et.gradient} opacity-100`} />
+                    )}
+                    <div className={`relative z-10 ${type === et.value ? 'text-white' : ''}`}>
+                      <div className="text-3xl mb-2 liquid-icon">{et.icon}</div>
+                      <div className={`text-sm font-semibold ${type === et.value ? 'text-white' : 'text-slate-600'}`}>
+                        {et.label}
+                      </div>
                     </div>
+                    {type === et.value && (
+                      <div className={`absolute inset-0 bg-gradient-to-br ${et.activeGradient} opacity-20 animate-pulse`} />
+                    )}
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-3">
+              <label className="block text-sm font-medium text-slate-700 mb-4">
                 选择日期类型
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <button
                   type="button"
                   onClick={() => setDateMode('solar')}
-                  className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
+                  className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-500 overflow-hidden ${
                     dateMode === 'solar'
-                      ? 'border-indigo-500 bg-indigo-50'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
+                      ? 'border-indigo-400'
+                      : 'border-white/50 hover:border-slate-200'
+                  } ${dateMode === 'solar' ? '' : 'bg-white/50'}`}
                 >
-                  <div className="text-2xl mb-1">📅</div>
-                  <div className={`font-medium ${dateMode === 'solar' ? 'text-indigo-600' : 'text-slate-600'}`}>
-                    公历日期
+                  {dateMode === 'solar' && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-blue-100 opacity-100" />
+                  )}
+                  <div className="relative z-10">
+                    <div className="text-3xl mb-2 liquid-icon">📅</div>
+                    <div className={`font-semibold ${dateMode === 'solar' ? 'text-indigo-600' : 'text-slate-600'}`}>
+                      公历日期
+                    </div>
                   </div>
+                  {dateMode === 'solar' && (
+                    <div className="absolute bottom-2 right-2 w-2 h-2 bg-indigo-500 rounded-full animate-ping" />
+                  )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setDateMode('lunar')}
-                  className={`p-4 rounded-2xl border-2 transition-all duration-300 ${
+                  className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-500 overflow-hidden ${
                     dateMode === 'lunar'
-                      ? 'border-amber-500 bg-amber-50'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
+                      ? 'border-amber-400'
+                      : 'border-white/50 hover:border-slate-200'
+                  } ${dateMode === 'lunar' ? '' : 'bg-white/50'}`}
                 >
-                  <div className="text-2xl mb-1">🌙</div>
-                  <div className={`font-medium ${dateMode === 'lunar' ? 'text-amber-600' : 'text-slate-600'}`}>
-                    农历日期
+                  {dateMode === 'lunar' && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-orange-100 opacity-100" />
+                  )}
+                  <div className="relative z-10">
+                    <div className="text-3xl mb-2 liquid-icon">🌙</div>
+                    <div className={`font-semibold ${dateMode === 'lunar' ? 'text-amber-600' : 'text-slate-600'}`}>
+                      农历日期
+                    </div>
                   </div>
+                  {dateMode === 'lunar' && (
+                    <div className="absolute bottom-2 right-2 w-2 h-2 bg-amber-500 rounded-full animate-ping" />
+                  )}
                 </button>
               </div>
             </div>
 
-            {dateMode === 'solar' ? (
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    年份
-                  </label>
-                  <select
+            <div className={`relative p-6 rounded-[1.5rem] transition-all duration-500 ${
+              dateMode === 'solar' 
+                ? 'bg-gradient-to-br from-indigo-50/80 to-blue-50/80' 
+                : 'bg-gradient-to-br from-amber-50/80 to-orange-50/80'
+            }`}>
+              <div className={`absolute inset-0 rounded-[1.5rem] ${
+                dateMode === 'solar'
+                  ? 'bg-gradient-to-br from-indigo-400/10 to-blue-400/10'
+                  : 'bg-gradient-to-br from-amber-400/10 to-orange-400/10'
+              }`} />
+              
+              {dateMode === 'solar' ? (
+                <div className="grid grid-cols-3 gap-4 relative z-10">
+                  <LiquidSelect
+                    label="年份"
                     value={solarYear}
-                    onChange={(e) => {
-                      const year = parseInt(e.target.value);
-                      setSolarYear(year);
-                      const daysInMonth = new Date(year, solarMonth, 0).getDate();
+                    onChange={(val) => {
+                      setSolarYear(val);
+                      const daysInMonth = new Date(val, solarMonth, 0).getDate();
                       if (solarDay > daysInMonth) {
                         setSolarDay(daysInMonth);
                       }
                     }}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    {getSolarYears().map((y) => (
-                      <option key={y.value} value={y.value}>{y.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    月份
-                  </label>
-                  <select
+                    options={getSolarYears()}
+                    colorClass="indigo"
+                  />
+                  <LiquidSelect
+                    label="月份"
                     value={solarMonth}
-                    onChange={(e) => {
-                      const month = parseInt(e.target.value);
-                      setSolarMonth(month);
-                      const daysInMonth = new Date(solarYear, month, 0).getDate();
+                    onChange={(val) => {
+                      setSolarMonth(val);
+                      const daysInMonth = new Date(solarYear, val, 0).getDate();
                       if (solarDay > daysInMonth) {
                         setSolarDay(daysInMonth);
                       }
                     }}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    {getSolarMonths().map((m) => (
-                      <option key={m.value} value={m.value}>{m.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    日期
-                  </label>
-                  <select
+                    options={getSolarMonths()}
+                    colorClass="indigo"
+                  />
+                  <LiquidSelect
+                    label="日期"
                     value={solarDay}
-                    onChange={(e) => setSolarDay(parseInt(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
-                    {getSolarDays(solarYear, solarMonth).map((d) => (
-                      <option key={d.value} value={d.value}>{d.label}</option>
-                    ))}
-                  </select>
+                    onChange={setSolarDay}
+                    options={getSolarDays(solarYear, solarMonth)}
+                    colorClass="indigo"
+                  />
                 </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    年份
-                  </label>
-                  <select
+              ) : (
+                <div className="grid grid-cols-3 gap-4 relative z-10">
+                  <LiquidSelect
+                    label="年份"
                     value={lunarYear}
-                    onChange={(e) => setLunarYear(parseInt(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    {getLunarYears().map((y) => (
-                      <option key={y.value} value={y.value}>{y.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    月份
-                  </label>
-                  <select
+                    onChange={setLunarYear}
+                    options={getLunarYears()}
+                    colorClass="amber"
+                  />
+                  <LiquidSelect
+                    label="月份"
                     value={lunarMonth}
-                    onChange={(e) => setLunarMonth(parseInt(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    {LUNAR_MONTHS.map((m) => (
-                      <option key={m.value} value={m.value}>{m.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    日期
-                  </label>
-                  <select
+                    onChange={setLunarMonth}
+                    options={LUNAR_MONTHS}
+                    colorClass="amber"
+                  />
+                  <LiquidSelect
+                    label="日期"
                     value={lunarDay}
-                    onChange={(e) => setLunarDay(parseInt(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    {LUNAR_DAYS.map((d) => (
-                      <option key={d.value} value={d.value}>{d.label}</option>
-                    ))}
-                  </select>
+                    onChange={setLunarDay}
+                    options={LUNAR_DAYS}
+                    colorClass="amber"
+                  />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="isRecurring"
+            <div className="flex items-center gap-3 p-4 bg-white/50 rounded-2xl">
+              <LiquidCheckbox
                 checked={isRecurring}
-                onChange={(e) => setIsRecurring(e.target.checked)}
-                className="w-5 h-5 text-indigo-500 rounded focus:ring-indigo-500"
+                onChange={setIsRecurring}
+                label="每年重复"
               />
-              <label htmlFor="isRecurring" className="text-sm text-slate-600">
-                每年重复
-              </label>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2 liquid-label">
                 描述（可选）
               </label>
               <textarea
@@ -373,15 +468,15 @@ export const AddEventPage = () => {
                 placeholder="添加一些备注..."
                 rows={3}
                 maxLength={200}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm text-slate-800 placeholder-slate-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:border-transparent liquid-textarea resize-none"
               />
             </div>
 
             <div className="flex gap-4 pt-4">
-              <Button type="button" variant="secondary" className="flex-1" onClick={() => navigate('/')}>
+              <Button type="button" variant="secondary" className="flex-1" onClick={() => navigate('/')} liquid>
                 取消
               </Button>
-              <Button type="submit" className="flex-1" disabled={loading}>
+              <Button type="submit" className="flex-1" disabled={loading} liquid>
                 {loading ? '保存中...' : '保存'}
               </Button>
             </div>

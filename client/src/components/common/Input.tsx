@@ -8,20 +8,23 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = '', ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className="w-full relative">
         {label && (
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-slate-700 mb-2 liquid-label">
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          className={`w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-            error ? 'border-red-500' : ''
-          } ${className}`}
-          {...props}
-        />
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+        <div className="relative liquid-input-wrapper">
+          <input
+            ref={ref}
+            className={`w-full px-5 py-3.5 rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm text-slate-800 placeholder-slate-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:border-transparent liquid-input ${
+              error ? 'liquid-input-error' : ''
+            } ${className}`}
+            {...props}
+          />
+          <div className="liquid-input-ripple" />
+        </div>
+        {error && <p className="mt-2 text-sm text-red-500 liquid-error">{error}</p>}
       </div>
     );
   }
