@@ -5,6 +5,7 @@ import { Input } from '../../components/common/Input';
 import { eventApi } from '../../api';
 import { EventType } from '../../types';
 import { LUNAR_MONTHS, LUNAR_DAYS, lunarToSolar } from '../../utils/lunar';
+import { useTheme } from '../../context/ThemeContext';
 
 const BackgroundOrbs = () => (
   <div className="bg-animation">
@@ -159,6 +160,7 @@ export const AddEventPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
+  const { themeColor } = useTheme();
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState<EventType>('CUSTOM');
@@ -256,26 +258,27 @@ export const AddEventPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
       <BackgroundOrbs />
 
       <div className="max-w-2xl mx-auto px-4 py-8 relative z-10">
         <button
           onClick={() => navigate('/')}
-          className="text-slate-500 hover:text-indigo-600 mb-6 flex items-center gap-2 transition-colors duration-300"
+          className="text-slate-500 dark:text-slate-400 hover:transition-colors duration-300 mb-6 flex items-center gap-2"
+          style={{ color: themeColor }}
         >
           <span className="text-xl">←</span>
           <span>返回</span>
         </button>
 
-        <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 border border-white/60 p-8 liquid-card">
-          <h1 className="text-3xl font-bold text-slate-800 mb-8 text-center">
+        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-white/60 dark:border-slate-700/60 p-8 liquid-card">
+          <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-8 text-center">
             {isEditing ? '编辑事件' : '添加新事件'}
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="p-4 bg-red-50/80 backdrop-blur-sm text-red-500 text-sm rounded-2xl border border-red-100/50 liquid-error">
+              <div className="p-4 bg-red-50/80 dark:bg-red-900/30 backdrop-blur-sm text-red-500 dark:text-red-400 text-sm rounded-2xl border border-red-100/50 dark:border-red-800/50 liquid-error">
                 {error}
               </div>
             )}
@@ -291,7 +294,7 @@ export const AddEventPage = () => {
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-4">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
                 事件类型
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -303,16 +306,16 @@ export const AddEventPage = () => {
                     className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-500 overflow-hidden ${
                       type === et.value
                         ? 'border-transparent'
-                        : 'border-white/50 hover:border-slate-200'
-                    } ${type === et.value ? '' : 'bg-white/50'}`}
+                        : 'border-white/50 dark:border-slate-600/50 hover:border-slate-300 dark:hover:border-slate-500'
+                    } ${type === et.value ? '' : 'bg-white/50 dark:bg-slate-700/50'}`}
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {type === et.value && (
                       <div className={`absolute inset-0 bg-gradient-to-br ${et.gradient} opacity-100`} />
                     )}
-                    <div className={`relative z-10 ${type === et.value ? 'text-white' : ''}`}>
+                    <div className={`relative z-10 ${type === et.value ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>
                       <div className="text-3xl mb-2 liquid-icon">{et.icon}</div>
-                      <div className={`text-sm font-semibold ${type === et.value ? 'text-white' : 'text-slate-600'}`}>
+                      <div className={`text-sm font-semibold ${type === et.value ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>
                         {et.label}
                       </div>
                     </div>
@@ -325,7 +328,7 @@ export const AddEventPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-4">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
                 选择日期类型
               </label>
               <div className="grid grid-cols-2 gap-4">
@@ -335,15 +338,15 @@ export const AddEventPage = () => {
                   className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-500 overflow-hidden ${
                     dateMode === 'solar'
                       ? 'border-indigo-400'
-                      : 'border-white/50 hover:border-slate-200'
-                  } ${dateMode === 'solar' ? '' : 'bg-white/50'}`}
+                      : 'border-white/50 dark:border-slate-600/50 hover:border-slate-300 dark:hover:border-slate-500'
+                  } ${dateMode === 'solar' ? '' : 'bg-white/50 dark:bg-slate-700/50'}`}
                 >
                   {dateMode === 'solar' && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-blue-100 opacity-100" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-900/50 dark:to-blue-900/50 opacity-100" />
                   )}
                   <div className="relative z-10">
                     <div className="text-3xl mb-2 liquid-icon">📅</div>
-                    <div className={`font-semibold ${dateMode === 'solar' ? 'text-indigo-600' : 'text-slate-600'}`}>
+                    <div className={`font-semibold ${dateMode === 'solar' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300'}`}>
                       公历日期
                     </div>
                   </div>
@@ -357,15 +360,15 @@ export const AddEventPage = () => {
                   className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-500 overflow-hidden ${
                     dateMode === 'lunar'
                       ? 'border-amber-400'
-                      : 'border-white/50 hover:border-slate-200'
-                  } ${dateMode === 'lunar' ? '' : 'bg-white/50'}`}
+                      : 'border-white/50 dark:border-slate-600/50 hover:border-slate-300 dark:hover:border-slate-500'
+                  } ${dateMode === 'lunar' ? '' : 'bg-white/50 dark:bg-slate-700/50'}`}
                 >
                   {dateMode === 'lunar' && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-orange-100 opacity-100" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/50 dark:to-orange-900/50 opacity-100" />
                   )}
                   <div className="relative z-10">
                     <div className="text-3xl mb-2 liquid-icon">🌙</div>
-                    <div className={`font-semibold ${dateMode === 'lunar' ? 'text-amber-600' : 'text-slate-600'}`}>
+                    <div className={`font-semibold ${dateMode === 'lunar' ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-300'}`}>
                       农历日期
                     </div>
                   </div>
@@ -378,8 +381,8 @@ export const AddEventPage = () => {
 
             <div className={`relative p-6 rounded-[1.5rem] transition-all duration-500 ${
               dateMode === 'solar' 
-                ? 'bg-gradient-to-br from-indigo-50/80 to-blue-50/80' 
-                : 'bg-gradient-to-br from-amber-50/80 to-orange-50/80'
+                ? 'bg-gradient-to-br from-indigo-50/80 to-blue-50/80 dark:from-indigo-900/30 dark:to-blue-900/30' 
+                : 'bg-gradient-to-br from-amber-50/80 to-orange-50/80 dark:from-amber-900/30 dark:to-orange-900/30'
             }`}>
               <div className={`absolute inset-0 rounded-[1.5rem] ${
                 dateMode === 'solar'
@@ -450,7 +453,7 @@ export const AddEventPage = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-3 p-4 bg-white/50 rounded-2xl">
+            <div className="flex items-center gap-3 p-4 bg-white/50 dark:bg-slate-700/50 rounded-2xl">
               <LiquidCheckbox
                 checked={isRecurring}
                 onChange={setIsRecurring}
@@ -459,7 +462,7 @@ export const AddEventPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2 liquid-label">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 liquid-label">
                 描述（可选）
               </label>
               <textarea
@@ -468,7 +471,8 @@ export const AddEventPage = () => {
                 placeholder="添加一些备注..."
                 rows={3}
                 maxLength={200}
-                className="w-full px-5 py-4 rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm text-slate-800 placeholder-slate-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:border-transparent liquid-textarea resize-none"
+                className="w-full px-5 py-4 rounded-2xl border border-slate-200/60 dark:border-slate-600/60 bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-500 focus:outline-none focus:ring-2 focus:border-transparent liquid-textarea resize-none"
+                style={{ '--tw-ring-color': themeColor + '60' } as React.CSSProperties}
               />
             </div>
 

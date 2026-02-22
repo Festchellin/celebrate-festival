@@ -53,18 +53,18 @@ export const RegisterPage = () => {
       <BackgroundOrbs />
 
       <div className="relative w-full max-w-md page-enter">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-200/50 border border-white/50 p-8 card-glow">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-white/50 dark:border-slate-700/50 p-8 card-glow">
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/30">
               <span className="text-4xl bounce-subtle">🎉</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">创建账户</h1>
-            <p className="text-slate-500 mt-2">开始记录您的美好时刻</p>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">创建账户</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">开始记录您的美好时刻</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 bg-red-50 text-red-500 text-sm rounded-xl border border-red-100">
+              <div className="p-3 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 text-sm rounded-xl border border-red-100 dark:border-red-800/50">
                 {error}
               </div>
             )}
@@ -104,9 +104,9 @@ export const RegisterPage = () => {
             </Button>
           </form>
 
-          <p className="text-center text-slate-500 mt-6">
+          <p className="text-center text-slate-500 dark:text-slate-400 mt-6">
             已有账户？{' '}
-            <Link to="/login" className="text-indigo-500 hover:text-indigo-600 font-medium hover:underline">
+            <Link to="/login" className="font-medium hover:underline" style={{ color: 'var(--color-primary, #6366F1)' }}>
               立即登录
             </Link>
           </p>

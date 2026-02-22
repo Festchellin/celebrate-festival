@@ -9,7 +9,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, password: string) => Promise<void>;
   logout: () => void;
-  updateUser: (data: { nickname?: string; avatar?: string; bio?: string }) => Promise<void>;
+  updateUser: (data: { nickname?: string; avatar?: string; bio?: string; themeColor?: string; themeMode?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +27,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const res = await authApi.getMe();
           setUser(res.data);
           setToken(storedToken);
+          if (res.data.themeMode) {
+            localStorage.setItem('themeMode', res.data.themeMode);
+          }
         } catch {
           localStorage.removeItem('token');
           setToken(null);
@@ -44,6 +47,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setUser(userData);
+      if (userData.themeMode) {
+        localStorage.setItem('themeMode', userData.themeMode);
+      }
     } catch (error: any) {
       throw error.response?.data?.error 
         ? new Error(error.response.data.error) 
@@ -57,6 +63,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('token', newToken);
     setToken(newToken);
     setUser(userData);
+    if (userData.themeMode) {
+      localStorage.setItem('themeMode', userData.themeMode);
+    }
   };
 
   const logout = () => {
@@ -65,9 +74,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
-  const updateUser = async (data: { nickname?: string; avatar?: string; bio?: string }) => {
+  const updateUser = async (data: { nickname?: string; avatar?: string; bio?: string; themeColor?: string; themeMode?: string }) => {
     const res = await authApi.updateProfile(data) as { data: User };
     setUser(res.data);
+    if (res.data.themeMode) {
+      localStorage.setItem('themeMode', res.data.themeMode);
+    }
   };
 
   return (

@@ -47,13 +47,13 @@ export const LoginPage = () => {
               <span className="text-5xl bounce-subtle">🎉</span>
               <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-800 liquid-title">欢迎回来</h1>
-            <p className="text-slate-500 mt-2">登录您的账户</p>
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white liquid-title">欢迎回来</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">登录您的账户</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-4 bg-red-50/80 backdrop-blur-sm text-red-500 text-sm rounded-2xl border border-red-100/50 liquid-error">
+              <div className="p-4 bg-red-50/80 dark:bg-red-900/30 backdrop-blur-sm text-red-500 dark:text-red-400 text-sm rounded-2xl border border-red-100/50 dark:border-red-800/50 liquid-error">
                 {error}
               </div>
             )}
@@ -81,9 +81,9 @@ export const LoginPage = () => {
             </Button>
           </form>
 
-          <p className="text-center text-slate-500 mt-8">
+          <p className="text-center text-slate-500 dark:text-slate-400 mt-8">
             还没有账户？{' '}
-            <Link to="/register" className="text-indigo-500 hover:text-indigo-600 font-medium hover:underline liquid-link">
+            <Link to="/register" className="font-medium hover:underline liquid-link" style={{ color: 'var(--color-primary, #6366F1)' }}>
               立即注册
             </Link>
           </p>

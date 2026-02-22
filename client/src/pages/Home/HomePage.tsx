@@ -93,7 +93,7 @@ export const HomePage = () => {
             <span className="text-5xl bounce-subtle">🎉</span>
           </div>
           <h1 className="text-4xl font-bold gradient-text mb-4">记录美好时刻</h1>
-          <p className="text-slate-500 text-lg mb-8">为您的节日、生日、纪念日设置倒计时</p>
+          <p className="text-slate-500 dark:text-slate-400 text-lg mb-8">为您的节日、生日、纪念日设置倒计时</p>
           <div className="flex gap-4 justify-center">
             <Link to="/login">
               <Button className="btn-shine ripple">登录</Button>
@@ -115,28 +115,28 @@ export const HomePage = () => {
       <main className="max-w-6xl mx-auto px-4 py-8 relative z-10">
         <div className="flex items-center justify-between mb-8 page-enter">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
               你好，{user.nickname || user.username} 👋
             </h1>
-            <p className="text-slate-500 mt-1">距离下一个重要日子还有...</p>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">距离下一个重要日子还有...</p>
           </div>
           
           <Link to="/add">
-            <Button className="btn-shine ripple flex items-center gap-2 shadow-lg shadow-indigo-500/25">
+            <Button className="btn-shine ripple flex items-center gap-2 shadow-lg">
               <span className="text-lg">+</span> 添加事件
             </Button>
           </Link>
         </div>
 
         <div className="flex gap-3 mb-8 overflow-x-auto pb-2 page-enter" style={{ animationDelay: '0.1s' }}>
-          {eventTypes.map((type, index) => (
+          {eventTypes.map((type) => (
             <button
               key={type.value}
               onClick={() => setFilter(type.value)}
               className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 ${
                 filter === type.value
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/25'
-                  : 'bg-white/80 backdrop-blur text-slate-600 hover:bg-white hover:shadow-md'
+                  ? 'text-white shadow-lg'
+                  : 'bg-white/80 dark:bg-slate-800/80 backdrop-blur text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:shadow-md'
               }`}
             >
               {type.label}
@@ -150,11 +150,11 @@ export const HomePage = () => {
           </div>
         ) : events.length === 0 ? (
           <div className="text-center py-16 page-enter" style={{ animationDelay: '0.2s' }}>
-            <div className="w-24 h-24 bg-white/60 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-24 h-24 bg-white/60 dark:bg-slate-800/60 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <span className="text-5xl icon-float">📅</span>
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-2">还没有任何事件</h3>
-            <p className="text-slate-500 mb-6">点击上方按钮添加您的第一个倒计时</p>
+            <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">还没有任何事件</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">点击上方按钮添加您的第一个倒计时</p>
             <Link to="/add">
               <Button className="btn-shine">添加事件</Button>
             </Link>
@@ -176,15 +176,15 @@ export const HomePage = () => {
 
       {shareModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4 page-enter">
-          <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/50">
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">分享链接</h3>
-            <p className="text-slate-500 mb-4">复制以下链接分享给他人：</p>
+          <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white/50 dark:border-slate-700/50">
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-white mb-2">分享链接</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-4">复制以下链接分享给他人：</p>
             <div className="flex gap-2">
               <input
                 type="text"
                 readOnly
                 value={window.location.origin + shareModal.url}
-                className="flex-1 px-4 py-3 bg-slate-50 rounded-xl text-sm text-slate-600 border border-slate-200"
+                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-700 rounded-xl text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600"
               />
               <Button onClick={copyShareUrl} className="btn-shine">复制</Button>
             </div>

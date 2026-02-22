@@ -48,6 +48,8 @@ export const register = async (req: Request, res: Response) => {
         avatar: user.avatar,
         bio: user.bio,
         role: user.role,
+        themeColor: user.themeColor,
+        themeMode: user.themeMode,
       },
     });
   } catch (error) {
@@ -90,6 +92,8 @@ export const login = async (req: Request, res: Response) => {
         avatar: user.avatar,
         bio: user.bio,
         role: user.role,
+        themeColor: user.themeColor,
+        themeMode: user.themeMode,
       },
     });
   } catch (error) {
@@ -112,6 +116,8 @@ export const getMe = async (req: AuthRequest, res: Response) => {
         bio: true,
         role: true,
         createdAt: true,
+        themeColor: true,
+        themeMode: true,
       },
     });
 
@@ -129,7 +135,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
-    const { nickname, avatar, bio } = req.body;
+    const { nickname, avatar, bio, themeColor, themeMode } = req.body;
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -137,6 +143,8 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
         nickname,
         avatar,
         bio,
+        themeColor,
+        themeMode,
       },
       select: {
         id: true,
@@ -144,6 +152,8 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
         nickname: true,
         avatar: true,
         bio: true,
+        themeColor: true,
+        themeMode: true,
       },
     });
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
+import { ThemeSelector } from '../../components/common/ThemeSelector';
 
 export const ProfilePage = () => {
   const { user, updateUser, logout } = useAuth();
@@ -26,7 +27,7 @@ export const ProfilePage = () => {
         bio: bio || undefined,
       });
       setMessage('保存成功！');
-    } catch (error) {
+    } catch {
       setMessage('保存失败，请重试');
     } finally {
       setLoading(false);
@@ -39,39 +40,39 @@ export const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <button
           onClick={() => navigate('/')}
-          className="text-slate-500 hover:text-slate-700 mb-6 flex items-center gap-2"
+          className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 mb-6 flex items-center gap-2"
         >
           ← 返回
         </button>
 
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white/50 p-8">
-          <h1 className="text-2xl font-bold text-slate-800 mb-6">个人资料</h1>
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-white/50 dark:border-slate-700/50 p-8">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">个人资料</h1>
 
           <div className="flex items-center gap-6 mb-8">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-100 dark:from-indigo-900/50 to-purple-100 dark:to-purple-900/50 flex items-center justify-center overflow-hidden">
                 {avatar ? (
                   <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-4xl text-indigo-600 font-bold">
+                  <span className="text-4xl font-bold" style={{ color: 'var(--color-primary, #6366F1)' }}>
                     {user?.username?.[0] || ''}
                   </span>
                 )}
               </div>
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-800">{user?.username}</h2>
-              <p className="text-slate-500">注册用户</p>
+              <h2 className="text-xl font-semibold text-slate-800 dark:text-white">{user?.username}</h2>
+              <p className="text-slate-500 dark:text-slate-400">注册用户</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {message && (
-              <div className={`p-3 text-sm rounded-xl ${message.includes('成功') ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'}`}>
+              <div className={`p-3 text-sm rounded-xl ${message.includes('成功') ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400'}`}>
                 {message}
               </div>
             )}
@@ -93,7 +94,7 @@ export const ProfilePage = () => {
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 个性签名
               </label>
               <textarea
@@ -102,7 +103,8 @@ export const ProfilePage = () => {
                 placeholder="介绍一下自己..."
                 rows={3}
                 maxLength={100}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                style={{ '--tw-ring-color': 'var(--color-primary, #6366F1)' } as React.CSSProperties}
               />
             </div>
 
@@ -111,7 +113,12 @@ export const ProfilePage = () => {
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-slate-100">
+          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">主题设置</h3>
+            <ThemeSelector />
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
             <Button variant="danger" className="w-full" onClick={handleLogout}>
               退出登录
             </Button>

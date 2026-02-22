@@ -5,6 +5,8 @@ export interface User {
   avatar: string | null;
   bio: string | null;
   role?: string;
+  themeColor?: string;
+  themeMode?: string;
   createdAt?: string;
 }
 
