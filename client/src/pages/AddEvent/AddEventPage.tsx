@@ -166,6 +166,7 @@ export const AddEventPage = () => {
   const [type, setType] = useState<EventType>('CUSTOM');
   const [description, setDescription] = useState('');
   const [isRecurring, setIsRecurring] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
   const [dateMode, setDateMode] = useState<DateMode>('solar');
   
   const [solarYear, setSolarYear] = useState(new Date().getFullYear());
@@ -193,6 +194,7 @@ export const AddEventPage = () => {
       setType(event.type);
       setDescription(event.description || '');
       setIsRecurring(event.isRecurring);
+      setIsPinned(event.isPinned || false);
       
       if (event.isLunar && event.lunarMonth && event.lunarDay) {
         setDateMode('lunar');
@@ -239,6 +241,7 @@ export const AddEventPage = () => {
         type,
         description: description || undefined,
         isRecurring,
+        isPinned,
         isLunar: dateMode === 'lunar',
         lunarMonth: dateMode === 'lunar' ? lunarMonth : null,
         lunarDay: dateMode === 'lunar' ? lunarDay : null,
@@ -458,6 +461,14 @@ export const AddEventPage = () => {
                 checked={isRecurring}
                 onChange={setIsRecurring}
                 label="每年重复"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 p-4 bg-white/50 dark:bg-slate-700/50 rounded-2xl">
+              <LiquidCheckbox
+                checked={isPinned}
+                onChange={setIsPinned}
+                label="置顶事件"
               />
             </div>
 

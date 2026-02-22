@@ -67,6 +67,15 @@ export const HomePage = () => {
     }
   };
 
+  const handlePin = async (eventId: number, currentPinned: boolean) => {
+    try {
+      await eventApi.updateEvent(eventId, { isPinned: !currentPinned });
+      loadEvents();
+    } catch (error) {
+      console.error('Failed to toggle pin:', error);
+    }
+  };
+
   const copyShareUrl = async () => {
     if (shareModal) {
       const fullUrl = window.location.origin + shareModal.url;
@@ -160,7 +169,7 @@ export const HomePage = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
             {events.map((event) => (
               <CountdownCard
                 key={event.id}
@@ -168,6 +177,7 @@ export const HomePage = () => {
                 onEdit={() => navigate(`/edit/${event.id}`)}
                 onDelete={() => handleDelete(event.id)}
                 onShare={() => handleShare(event.id)}
+                onPin={() => handlePin(event.id, event.isPinned)}
               />
             ))}
           </div>

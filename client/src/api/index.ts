@@ -45,6 +45,7 @@ export const eventApi = {
     type: string;
     description?: string;
     isRecurring?: boolean;
+    isPinned?: boolean;
     remindDays?: number;
   }) => api.post('/events', data),
   updateEvent: (id: number, data: {
@@ -53,6 +54,7 @@ export const eventApi = {
     type?: string;
     description?: string;
     isRecurring?: boolean;
+    isPinned?: boolean;
     remindDays?: number;
   }) => api.put(`/events/${id}`, data),
   deleteEvent: (id: number) => api.delete(`/events/${id}`),

@@ -8,6 +8,7 @@ interface CountdownCardProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onShare?: () => void;
+  onPin?: () => void;
 }
 
 const eventTypeConfig: Record<EventType, { 
@@ -71,17 +72,18 @@ const eventTypeIcons: Record<EventType, string> = {
   CUSTOM: '🎊',
 };
 
-export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCardProps) => {
+export const CountdownCard = ({ event, onEdit, onDelete, onShare, onPin }: CountdownCardProps) => {
   const { themeColor, themeMode } = useTheme();
   const config = eventTypeConfig[event.type as EventType] || eventTypeConfig.CUSTOM;
-  const { countdownDays, anniversary, isLunar, lunarMonth, lunarDay } = event;
+  const { countdownDays, anniversary, isLunar, lunarMonth, lunarDay, isRecurring, isPinned } = event;
   const isToday = countdownDays === 0;
   const isDark = themeMode === 'dark';
 
   const formatCountdown = () => {
-    if (countdownDays === 0) return { text: '就是今天!', className: 'text-green-500 dark:text-green-400' };
-    if (countdownDays > 0) return { text: `还有 ${countdownDays} 天`, className: isDark ? 'text-indigo-400' : 'text-indigo-600' };
-    return { text: `已过去 ${Math.abs(countdownDays)} 天`, className: 'text-slate-400' };
+    if (countdownDays === 0) return { text: '就是今天!', color: '#22c55e' };
+    if (countdownDays > 0) return { text: `还有 ${countdownDays} 天`, color: themeColor };
+    if (!isRecurring) return { text: `已过${Math.abs(countdownDays)}天`, color: '#f97316' };
+    return { text: `已过去 ${Math.abs(countdownDays)} 天`, color: '#94a3b8' };
   };
 
   const countdown = formatCountdown();
@@ -182,15 +184,15 @@ export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCar
         
         <div className="flex-1 min-w-0">
           {/* 标题和标签 */}
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h3 className={`font-semibold text-lg truncate ${
+          <div className="flex items-center gap-2 mb-1 flex-nowrap">
+            <h3 className={`font-semibold text-lg truncate flex-shrink-0 ${
               isToday 
                 ? 'text-green-600 dark:text-green-400' 
                 : 'text-slate-800 dark:text-white'
             }`}>
               {event.title}
             </h3>
-            <span className={`text-xs px-3 py-1 rounded-full font-medium liquid-badge ${
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium liquid-badge flex-shrink-0 ${
               isToday 
                 ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' 
                 : `${config.bg} ${isDark ? 'dark:bg-slate-700/80' : ''} ${config.color}`
@@ -198,8 +200,13 @@ export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCar
               {eventTypeLabels[event.type as EventType]}
             </span>
             {isLunar && (
-              <span className="text-xs px-3 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-full font-medium liquid-badge">
-                🌙 农历
+              <span className="text-xs px-2 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-full font-medium liquid-badge flex-shrink-0">
+                🌙
+              </span>
+            )}
+            {isPinned && (
+              <span className="text-xs px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full font-medium liquid-badge flex-shrink-0">
+                📌
               </span>
             )}
           </div>
@@ -214,20 +221,15 @@ export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCar
                 🎉
               </span>
             ) : (
-              <>
-                <span 
-                  className="text-4xl font-bold count-animate liquid-count"
-                  style={{ 
-                    color: countdownDays > 0 ? themeColor : undefined,
-                    background: countdownDays > 0 ? 'transparent' : undefined,
-                    WebkitBackgroundClip: countdownDays > 0 ? 'text' : undefined,
-                    WebkitTextFillColor: countdownDays > 0 ? themeColor : undefined,
-                  }}
-                >
-                  {Math.abs(countdownDays)}
+              <div className="relative">
+                <div 
+                  className="absolute inset-0 rounded-2xl blur-2xl opacity-50"
+                  style={{ background: `linear-gradient(135deg, ${countdown.color}, ${countdown.color}40)` }}
+                />
+                <span className="text-4xl font-bold count-animate liquid-count relative" style={{ color: countdown.color }}>
+                  {countdown.text}
                 </span>
-                <span className="text-slate-500 dark:text-slate-400">{countdownDays === 0 ? '' : '天'}</span>
-              </>
+              </div>
             )}
             {event.isRecurring && anniversary !== null && anniversary > 0 && (
               <span className="text-sm px-3 py-1 bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/50 dark:to-orange-900/50 text-amber-600 dark:text-amber-400 rounded-full font-medium badge-shine liquid-badge">
@@ -239,11 +241,20 @@ export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCar
       </div>
 
       {/* 操作按钮 */}
-      <div className="flex gap-3 mt-5 pt-4 border-t border-slate-100/80 dark:border-slate-700/80">
+      <div className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-slate-100/80 dark:border-slate-700/80">
+        {onPin && (
+          <button 
+            onClick={onPin} 
+            className="text-sm text-slate-500 dark:text-slate-400 hover:transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg liquid-button-small"
+            style={{ color: isPinned ? themeColor : undefined }}
+          >
+            {isPinned ? '📌 取消置顶' : '📌 置顶'}
+          </button>
+        )}
         {onEdit && (
           <button 
             onClick={onEdit} 
-            className="text-sm text-slate-500 dark:text-slate-400 hover:transition-all duration-300 hover:scale-105 px-3 py-1.5 rounded-xl liquid-button-small"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg liquid-button-small"
             style={{ color: themeColor }}
           >
             ✏️ 编辑
@@ -252,7 +263,7 @@ export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCar
         {onShare && (
           <button 
             onClick={onShare} 
-            className="text-sm text-slate-500 dark:text-slate-400 hover:transition-all duration-300 hover:scale-105 px-3 py-1.5 rounded-xl liquid-button-small"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg liquid-button-small"
             style={{ color: themeColor }}
           >
             📤 分享
@@ -261,7 +272,7 @@ export const CountdownCard = ({ event, onEdit, onDelete, onShare }: CountdownCar
         {onDelete && (
           <button 
             onClick={onDelete} 
-            className="text-sm text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all duration-300 hover:scale-105 px-3 py-1.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 ml-auto liquid-button-small"
+            className="text-sm text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all duration-300 hover:scale-105 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 ml-auto liquid-button-small"
           >
             🗑️ 删除
           </button>

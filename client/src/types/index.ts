@@ -18,6 +18,7 @@ export interface Event {
   type: EventType;
   description: string | null;
   isRecurring: boolean;
+  isPinned: boolean;
   remindDays: number | null;
   isLunar: boolean;
   lunarMonth: number | null;

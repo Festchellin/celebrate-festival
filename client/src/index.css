@@ -886,19 +886,15 @@ body {
 }
 
 .liquid-count {
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   animation: liquid-count-pulse 2s ease-in-out infinite;
 }
 
 @keyframes liquid-count-pulse {
   0%, 100% {
-    filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.3));
+    opacity: 1;
   }
   50% {
-    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
+    opacity: 0.9;
   }
 }
 

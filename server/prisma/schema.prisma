@@ -31,6 +31,7 @@ model Event {
   type        String
   description String?
   isRecurring Boolean     @default(false)
+  isPinned    Boolean    @default(false)
   remindDays  Int?
   isLunar     Boolean     @default(false)
   lunarMonth  Int?

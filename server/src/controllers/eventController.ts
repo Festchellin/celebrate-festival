@@ -33,7 +33,7 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
 
     const eventsWithCountdown = events.map((event) => {
       const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
       let targetDate: Date;
       let anniversary: number | null = null;
       
@@ -72,11 +72,16 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
         }
       } else {
         targetDate = new Date(event.date);
+        const eventDateOnly = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+        
+        if (eventDateOnly < today) {
+          anniversary = null;
+        }
       }
 
-      const targetDateDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+      const targetDateDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), 0, 0, 0, 0);
       const diffTime = targetDateDay.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
       return {
         ...event,
@@ -86,7 +91,11 @@ export const getEvents = async (req: AuthRequest, res: Response) => {
       };
     });
 
-    eventsWithCountdown.sort((a, b) => a.countdownDays - b.countdownDays);
+    eventsWithCountdown.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return Math.abs(a.countdownDays) - Math.abs(b.countdownDays);
+    });
 
     res.json(eventsWithCountdown);
   } catch (error) {
@@ -169,7 +178,7 @@ export const getEvent = async (req: AuthRequest, res: Response) => {
 export const createEvent = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
-    const { title, date, type, description, isRecurring, remindDays, isLunar, lunarMonth, lunarDay } = req.body;
+    const { title, date, type, description, isRecurring, isPinned, remindDays, isLunar, lunarMonth, lunarDay } = req.body;
 
     if (!title || !date || !type) {
       return res.status(400).json({ error: 'Title, date, and type are required' });
@@ -183,6 +192,7 @@ export const createEvent = async (req: AuthRequest, res: Response) => {
         type: type as string,
         description: description as string | undefined,
         isRecurring: Boolean(isRecurring),
+        isPinned: Boolean(isPinned),
         remindDays: remindDays as number | undefined,
         isLunar: Boolean(isLunar),
         lunarMonth: lunarMonth as number | undefined,
@@ -201,7 +211,7 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
     const { id } = req.params;
-    const { title, date, type, description, isRecurring, remindDays, isLunar, lunarMonth, lunarDay } = req.body;
+    const { title, date, type, description, isRecurring, isPinned, remindDays, isLunar, lunarMonth, lunarDay } = req.body;
 
     const existingEvent = await prisma.event.findFirst({
       where: { id: parseInt(id as string), userId },
@@ -219,6 +229,7 @@ export const updateEvent = async (req: AuthRequest, res: Response) => {
         type: type as string | undefined,
         description: description as string | undefined,
         isRecurring: isRecurring as boolean | undefined,
+        isPinned: isPinned as boolean | undefined,
         remindDays: remindDays as number | undefined,
         isLunar: isLunar as boolean | undefined,
         lunarMonth: lunarMonth as number | undefined,
