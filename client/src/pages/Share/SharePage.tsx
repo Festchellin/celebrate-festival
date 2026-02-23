@@ -4,6 +4,7 @@ import { shareApi } from '../../api';
 import { Card } from '../../components/common/Card';
 import { Event, EventType } from '../../types';
 import { formatLunarDate } from '../../utils/lunar';
+import { useTheme } from '../../context/ThemeContext';
 
 const eventTypeConfig: Record<EventType, { color: string; bg: string; icon: string }> = {
   BIRTHDAY: { color: 'text-pink-500', bg: 'bg-pink-50', icon: '🎂' },
@@ -24,6 +25,8 @@ export const SharePage = () => {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { themeMode } = useTheme();
+  const isDark = themeMode === 'dark';
 
   useEffect(() => {
     if (token) {
@@ -44,21 +47,21 @@ export const SharePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className={`w-12 h-12 border-4 ${isDark ? 'border-indigo-400' : 'border-indigo-500'} border-t-transparent rounded-full animate-spin`} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="text-center">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className={`w-20 h-20 ${isDark ? 'bg-red-900/50' : 'bg-red-100'} rounded-full flex items-center justify-center mx-auto mb-4`}>
             <span className="text-4xl">😢</span>
           </div>
-          <h2 className="text-xl font-semibold text-slate-700 mb-2">无法查看</h2>
-          <p className="text-slate-500">{error}</p>
+          <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-2">无法查看</h2>
+          <p className="text-slate-500 dark:text-slate-400">{error}</p>
         </div>
       </div>
     );
@@ -106,10 +109,10 @@ export const SharePage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-200/30 rounded-full blur-3xl" />
+        <div className={`absolute top-1/4 left-1/4 w-96 h-96 ${isDark ? 'bg-purple-900/20' : 'bg-purple-200/30'} rounded-full blur-3xl`} />
+        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 ${isDark ? 'bg-indigo-900/20' : 'bg-indigo-200/30'} rounded-full blur-3xl`} />
       </div>
 
       <div className="relative w-full max-w-md page-enter">
@@ -127,31 +130,31 @@ export const SharePage = () => {
               <div className="confetti confetti-9" />
             </>
           )}
-          <div className={`absolute top-0 right-0 w-32 h-32 ${isToday ? 'bg-green-100' : config.bg} rounded-full -translate-y-1/2 translate-x-1/2 opacity-60`} />
+          <div className={`absolute top-0 right-0 w-32 h-32 ${isToday ? (isDark ? 'bg-green-900/50' : 'bg-green-100') : (isDark ? config.bg.replace('bg-', 'bg-').replace('-50', '-900/50') : config.bg)} rounded-full -translate-y-1/2 translate-x-1/2 opacity-60`} />
           {isToday && (
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full -translate-y-1/2 translate-x-1/4 opacity-30 blur-xl" />
           )}
           
-          <div className={`w-20 h-20 ${config.bg} rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-lg`}>
+          <div className={`w-20 h-20 ${config.bg} dark:${config.bg.replace('-50', '-900/30')} rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-lg`}>
             <span className="icon-float">{config.icon}</span>
           </div>
 
-          <h1 className="text-2xl font-bold text-slate-800 mb-2">{event.title}</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">{event.title}</h1>
           
           <div className="flex justify-center gap-2 mb-4">
-            <span className={`text-sm px-3 py-1 ${isToday ? 'bg-green-100 text-green-600' : config.bg + ' ' + config.color} rounded-full font-medium`}>
+            <span className={`text-sm px-3 py-1 ${isToday ? (isDark ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-600') : config.bg + ' ' + config.color} rounded-full font-medium`}>
               {eventTypeLabels[event.type as EventType]}
             </span>
             {isLunar && (
-              <span className="text-sm px-3 py-1 bg-amber-100 text-amber-600 rounded-full font-medium">
+              <span className={`text-sm px-3 py-1 ${isDark ? 'bg-amber-900/50 text-amber-400' : 'bg-amber-100 text-amber-600'} rounded-full font-medium`}>
                 🌙 农历
               </span>
             )}
           </div>
 
-          <p className="text-slate-500 mb-8">{formattedDate}</p>
+          <p className="text-slate-500 dark:text-slate-400 mb-8">{formattedDate}</p>
 
-          <div className="py-8 border-y border-slate-100">
+          <div className={`py-8 border-y ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
             {isToday ? (
               <span className="text-6xl font-bold animate-bounce">
                 🎉
@@ -161,7 +164,7 @@ export const SharePage = () => {
                 <span className={`text-5xl font-bold count-animate ${countdown.className}`}>
                   {Math.abs(countdownDays)}
                 </span>
-                <p className="text-slate-500 mt-2">天</p>
+                <p className="text-slate-500 dark:text-slate-400 mt-2">天</p>
               </>
             )}
             {event.isRecurring && anniversary !== null && anniversary > 0 && (
@@ -172,12 +175,8 @@ export const SharePage = () => {
           </div>
 
           {event.description && (
-            <p className="text-slate-600 mt-6">{event.description}</p>
+            <p className="text-slate-600 dark:text-slate-300 mt-6">{event.description}</p>
           )}
-
-          <p className="text-sm text-slate-400 mt-8">
-            由 Holidays Celebration 分享
-          </p>
         </Card>
       </div>
     </div>
