@@ -3,6 +3,7 @@ client/dist
 
 server/node_modules
 server/dist
+server/src/prisma/dev.db
 # Logs
 logs
 *.log

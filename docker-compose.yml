@@ -11,8 +11,6 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3001
-    networks:
-      - app-network
 
   client:
     build:
@@ -24,12 +22,6 @@ services:
       - "8443:443"
     depends_on:
       - server
-    networks:
-      - app-network
 
 volumes:
   server-data:
-
-networks:
-  app-network:
-    driver: bridge

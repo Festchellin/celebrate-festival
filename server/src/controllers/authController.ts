@@ -152,6 +152,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
         nickname: true,
         avatar: true,
         bio: true,
+        role: true,
         themeColor: true,
         themeMode: true,
       },
